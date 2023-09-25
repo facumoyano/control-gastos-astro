@@ -1,0 +1,24 @@
+---
+import Navigation from "./Navigation.astro";
+import ThemeSwitch from "./ThemeSwitch.astro";
+import Button from '../ui/Button.astro';
+import {handleSignOut} from '../../utils/functions';
+
+---
+
+<header class="p-4 border dark:border-zinc-700 rounded-xl h-full bg-white border-slate-300 dark:bg-zinc-800 relative shadow-md">
+    <div class="flex justify-end">
+        <ThemeSwitch />
+    </div>
+    <div class="flex flex-col gap-3 items-center mt-4">
+        <img src="/images/hombre.png" alt="avatar" class=" h-14 w-14 object-contain" />
+        <span class="font-medium">¡Hola, Facu!</span>
+        <Navigation />
+    </div>
+    <div class="flex justify-center">
+        <Button customClass="absolute bottom-6" onClick={handleSignOut}>
+            <img src="/icons/logout.svg" alt="logout" slot="icon" class="mr-2" />
+            Logout
+        </Button>
+    </div>
+</header>

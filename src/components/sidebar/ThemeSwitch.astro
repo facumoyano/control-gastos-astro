@@ -1,0 +1,73 @@
+<div id="themeSwitch" class="cursor-pointer">
+  <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-moon-filled" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path d="M12 1.992a10 10 0 1 0 9.236 13.838c.341 -.82 -.476 -1.644 -1.298 -1.31a6.5 6.5 0 0 1 -6.864 -10.787l.077 -.08c.551 -.63 .113 -1.653 -.758 -1.653h-.266l-.068 -.006l-.06 -.002z" stroke-width="0" fill="currentColor"></path>
+  </svg>
+  <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brightness-up" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+    <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"></path>
+    <path d="M12 5l0 -2"></path>
+    <path d="M17 7l1.4 -1.4"></path>
+    <path d="M19 12l2 0"></path>
+    <path d="M17 17l1.4 1.4"></path>
+    <path d="M12 19l0 2"></path>
+    <path d="M7 17l-1.4 1.4"></path>
+    <path d="M6 12l-2 0"></path>
+    <path d="M7 7l-1.4 -1.4"></path>
+  </svg>
+</div>
+
+<style>
+  #moonIcon {
+  display: inline;
+}
+#sunIcon {
+  display: none;
+}
+:global(.dark) #moonIcon {
+  display: none;
+}
+:global(.dark) #sunIcon {
+  display: inline;
+}
+</style>
+
+<script type="module">
+  document.addEventListener('DOMContentLoaded', (event) => {
+    const themeSwitch = document.getElementById("themeSwitch");
+    const moonIcon = document.getElementById("moonIcon");
+    const sunIcon = document.getElementById("sunIcon");
+    let theme = localStorage.getItem("theme");
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  
+      theme = localStorage.getItem("theme");
+      if (theme !== "dark" && theme !== "light") {
+        theme = systemTheme;
+      }
+
+    //@ts-ignore  
+    function updateTheme(value) {
+      document.documentElement.classList.remove("light", "dark");
+      document.documentElement.classList.add(value);
+      localStorage.setItem("theme", value);
+      if(moonIcon && sunIcon) {
+        if (value === "dark") {
+          moonIcon.style.display = "none";
+          sunIcon.style.display = "inline";
+        } else {
+          moonIcon.style.display = "inline";
+          sunIcon.style.display = "none";
+        }
+      }
+    }
+  
+    updateTheme(theme);
+  
+    themeSwitch?.addEventListener("click", () => {
+      theme = theme === "dark" ? "light" : "dark";
+      updateTheme(theme);
+    });
+  });
+</script>

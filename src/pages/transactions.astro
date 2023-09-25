@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Sidebar from '../components/sidebar/Sidebar.astro';
+import LayoutTracker from '../layouts/LayoutTracker.astro';
+import LayoutPages from '../layouts/LayoutPages.astro';
+
+---
+
+<Layout title="Welcome to Astro.">
+	<LayoutPages>
+		<LayoutTracker>
+			<div class="h-full w-full bg-red-500">
+				hola
+			</div>
+		</LayoutTracker>
+	</LayoutPages>
+</Layout>

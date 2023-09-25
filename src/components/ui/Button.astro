@@ -1,0 +1,12 @@
+---
+interface ButtonProps {
+    customClass?: string;
+    onClick?: () => {};
+}
+const { customClass, onClick } = Astro.props
+---
+
+<button class=`px-4 py-2 shadow-md flex items-center justify-center rounded-full bg-white border-slate-400 dark:border-zinc-700 border text-black hover:bg-emerald-500 transition duration-150 font-semibold text-sm ${customClass}` onclick={onClick}>
+    <slot name="icon" />
+    <slot />
+</button>

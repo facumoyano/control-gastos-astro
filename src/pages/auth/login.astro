@@ -1,0 +1,16 @@
+---
+import ThemeSwitch from '../../components/sidebar/ThemeSwitch.astro';
+import LoginForm from '../../components/auth/LoginForm';
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Login">
+    <div class="h-screen relative dark:bg-black text-black dark:text-white w-full">
+        <div class="float-right switcher m-6">
+            <ThemeSwitch />
+        </div>
+        <div class="flex items-center justify-center max-w-lg min-h-[500px] m-auto">
+            <LoginForm client:load />
+        </div>
+    </div>
+</Layout>
