@@ -1,9 +1,11 @@
 ---
 import Input from './Input.astro'
 import Button from '../ui/Button.astro';
+
+const pathname = Astro.url.pathname;
 ---
 
-<form class="flex flex-col gap-4" action="/api/incomes" method="POST">
+<form class="flex flex-col gap-4" action=`/api/${pathname}` method="POST">
     <Input
       id="title"
       placeholder="Nombre del ingreso"

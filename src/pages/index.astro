@@ -7,6 +7,19 @@ import PieChart from '../components/charts/PieChart';
 import RecentHistory from '../components/dashboard/RecentHistory.astro';
 import { app } from '../config/firebase-server';
 import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from "firebase-admin/firestore";
+
+
+interface Transaction {
+    id: string;
+    title: string;
+    amount: number;
+    date: string;
+    category: string;
+    type: string;
+	createdAt?: string | undefined;
+}
+
 
 const auth = getAuth(app);
 
@@ -23,6 +36,29 @@ if (!user) {
   return Astro.redirect("/signin");
 }
 
+const db = getFirestore(app);
+const incomesRef = db.collection("incomes");
+const expensesRef = db.collection("expenses");
+
+const incomesSnapshot = await incomesRef.get();
+const expensesSnapshot = await expensesRef.get();
+
+const incomes = incomesSnapshot.docs.map((doc) => ({
+  id: doc.id,
+  type: 'income',
+  ...doc.data(),
+})) as Transaction[];
+
+const expenses = expensesSnapshot.docs.map((doc) => ({
+  id: doc.id,
+  type: 'expense',
+  ...doc.data(),
+})) as Transaction[];
+
+const transactions = [...incomes, ...expenses]
+  .sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
+  .slice(0, 5);
+
 ---
 
 <Layout title="Welcome to Astro.">
@@ -37,7 +73,7 @@ if (!user) {
 						<PieChart client:load />
 					</div>
 					<div>
-						<RecentHistory />
+						<RecentHistory transactions={transactions} />
 					</div>
 				</div>
 			</LayoutTracker>

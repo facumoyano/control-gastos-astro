@@ -2,14 +2,50 @@
 import Layout from '../layouts/Layout.astro';
 import LayoutTracker from '../layouts/LayoutTracker.astro';
 import LayoutPages from '../layouts/LayoutPages.astro';
+import Form from '../components/form/Form.astro';
+import IncomesExpensesInfo from '../components/IncomesExpensesInfo.astro';
+import { app } from "../config/firebase-server";
+import { getFirestore } from "firebase-admin/firestore";
 
+interface Income {
+    id: string;
+    title: string;
+    amount: number;
+    date: string;
+    category: string;
+}
+
+const db = getFirestore(app);
+const expensesRef = db.collection("expenses");
+const expensesSnapshot = await expensesRef.orderBy("createdAt", "desc").get();
+const expenses = expensesSnapshot.docs.map((doc) => ({
+  id: doc.id,
+  ...doc.data(),
+})) as Income[];
+
+const totalExpense = expenses.reduce((total, item) => total + item.amount, 0);
 ---
 
 <Layout title="Welcome to Astro.">
 	<LayoutPages>
 		<LayoutTracker>
-			<div>
-				<h1>Gastos</h1>
+			<div class="h-full">
+				<h1 class="font-medium text-2xl">Gastos</h1>
+                <section class="h-max">
+                    <div class="bg-slate-200 dark:bg-zinc-700 p-6 rounded-xl mt-6 shadow-md border-slate-200 dark:border-zinc-700 border block">
+                        <p class="text-xl text-center font-medium">Gastos totales: <span class=" text-emerald-400">${totalExpense}</span> </p>
+                    </div>
+                    <div class="bg-slate-200 dark:bg-zinc-700 p-6 rounded-xl mt-6 shadow-md border-slate-200 dark:border-zinc-700 border grid grid-cols-12 gap-4">
+                        <div class=" col-span-3">
+                            <Form />
+                        </div>
+                        <div class="col-span-9 flex flex-col gap-4">
+                            {expenses.map( item => (
+                                <IncomesExpensesInfo item={item} />
+                            ))}
+                        </div>
+                    </div>
+                </section>
 			</div>
 		</LayoutTracker>
 	</LayoutPages>

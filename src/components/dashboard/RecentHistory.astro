@@ -1,44 +1,27 @@
 ---
-const data = [
-  {
-    name: "Salario",
-    category: "Salario",
-    date: "Oct 11 - 01:00pm",
-    amount: 10000,
-    transactionType: "Income"
-  },
-  {
-    name: "Impuesto Municipal",
-    category: "Impuestos",
-    date: "Oct 12 - 10:00am",
-    amount: 1200,
-    transactionType: "Expense"
-  },
-  {
-    name: "Pago de luz",
-    category: "Impuestos",
-    date: "Oct 13 - 15:00pm",
-    amount: 5400,
-    transactionType: "Expense"
-  },
-  {
-    name: "Transferencia",
-    category: "Transferencias",
-    date: "Oct 13 - 01:00pm",
-    amount: 5000,
-    transactionType: "Income"
-  },
-]
+
+interface Transaction {
+    id: string;
+    title: string;
+    amount: number;
+    date: string;
+    category: string;
+    type: string;
+	createdAt?: string | undefined;
+}
+
+const { transactions } = Astro.props
+ 
 ---
 
 <div>
   <h3 class="font-medium text-lg">Historial Reciente</h3>
   <ul>
-    {data.map( item => (
+    {transactions.map( (item: Transaction) => (
       <li class="flex justify-between mt-6 max-w-xs">
         <div class="flex gap-3 items-center">
           <div class="dark:bg-black bg-slate-200 p-2 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-cash" width="30" height="30" viewBox="0 0 24 24" stroke-width="1.5" stroke=`${item.transactionType === "Expense" ? "#22C55E" : "#B91C1C"}` fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-cash" width="30" height="30" viewBox="0 0 24 24" stroke-width="1.5" stroke=`${item.type === "income" ? "#22C55E" : "#B91C1C"}` fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
               <path d="M7 9m0 2a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2z" />
               <path d="M14 14m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
@@ -46,12 +29,11 @@ const data = [
             </svg>
           </div>  
           <div class="flex flex-col gap-1">
-            <p class="font-medium">{item.name}</p>
+            <p class="font-medium">{item.title}</p>
             <p class="text-[12px] text-gray-600 dark:text-gray-400">{item.date}</p>
           </div>
         </div>
-        <span class="font-medium">{item.transactionType === "Expense" ? '+' : '-'}{" "}${item.amount}</span>
-        
+        <span class="font-medium">{item.type === "expense" ? '+' : '-'}{" "}${item.amount}</span>
       </li>
     ))}
   </ul>

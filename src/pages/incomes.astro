@@ -23,6 +23,7 @@ const incomes = incomesSnapshot.docs.map((doc) => ({
   ...doc.data(),
 })) as Income[];
 
+const totalIncome = incomes.reduce((total, item) => total + item.amount, 0);
 ---
 
 <Layout title="Welcome to Astro.">
@@ -30,9 +31,9 @@ const incomes = incomesSnapshot.docs.map((doc) => ({
 		<LayoutTracker>
 			<div class="h-full">
 				<h1 class="font-medium text-2xl">Ingresos</h1>
-                <section class="h-full">
+                <section class="h-max">
                     <div class="bg-slate-200 dark:bg-zinc-700 p-6 rounded-xl mt-6 shadow-md border-slate-200 dark:border-zinc-700 border block">
-                        <p class="text-xl text-center font-medium">Ingresos totales: <span class=" text-emerald-400">$123000</span> </p>
+                        <p class="text-xl text-center font-medium">Ingresos totales: <span class=" text-emerald-400">${totalIncome}</span> </p>
                     </div>
                     <div class="bg-slate-200 dark:bg-zinc-700 p-6 rounded-xl mt-6 shadow-md border-slate-200 dark:border-zinc-700 border grid grid-cols-12 gap-4">
                         <div class=" col-span-3">
