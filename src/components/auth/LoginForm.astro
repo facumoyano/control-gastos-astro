@@ -1,0 +1,58 @@
+---
+import { app } from "../../config/firebase-server";
+import { getAuth } from "firebase-admin/auth";
+
+/* Verificar si el usuario está autenticado */
+const auth = getAuth(app);
+if (Astro.cookies.has("session")) {
+  //@ts-ignore
+  const sessionCookie = Astro.cookies.get("session").value;
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+  if (decodedCookie) {
+    return Astro.redirect("/dashboard");
+  }
+}
+---
+
+<div class="p-4 border dark:border-zinc-700 rounded-xl  bg-white border-slate-300 dark:bg-zinc-800 shadow-md">
+    <h1 class="font-semibold">¡Bienvenido!</h1>
+        
+    <button id="send">Iniciar sesión con Google</button>
+</div>
+
+<script>
+  import { getAuth, GoogleAuthProvider, signInWithPopup, inMemoryPersistence } from "firebase/auth";
+  import { app as appClient } from "../../config/firebase-client";
+
+  const auth = getAuth(appClient);
+  // Esto evitará que el navegador almacene los datos de sesión
+  auth.setPersistence(inMemoryPersistence);
+
+  const provider = new GoogleAuthProvider();
+
+  const form = document.querySelector("#send") as HTMLButtonElement;
+  form.addEventListener("click", async (e) => {
+    console.log('click')
+    e.preventDefault();
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const idToken = await user.getIdToken();
+      console.log(idToken)
+      const response = await fetch("/api/auth/signin", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      console.log(response)
+
+      if (response.redirected) {
+        window.location.assign(response.url);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
+</script>

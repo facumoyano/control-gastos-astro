@@ -2,7 +2,7 @@
 import Navigation from "./Navigation.astro";
 import ThemeSwitch from "./ThemeSwitch.astro";
 import Button from '../ui/Button.astro';
-import {handleSignOut} from '../../utils/functions';
+
 
 ---
 
@@ -16,9 +16,11 @@ import {handleSignOut} from '../../utils/functions';
         <Navigation />
     </div>
     <div class="flex justify-center">
-        <Button customClass="absolute bottom-6" onClick={handleSignOut}>
-            <img src="/icons/logout.svg" alt="logout" slot="icon" class="mr-2" />
-            Logout
-        </Button>
+        <form action="/api/auth/signout" class="absolute bottom-6">
+            <Button>
+                <img src="/icons/logout.svg" alt="logout" slot="icon" class="mr-2" />
+                Logout
+            </Button>
+        </form>
     </div>
 </header>

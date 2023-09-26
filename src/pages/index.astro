@@ -5,23 +5,42 @@ import LayoutPages from '../layouts/LayoutPages.astro';
 import LineChart from '../components/charts/LineChart';
 import PieChart from '../components/charts/PieChart';
 import RecentHistory from '../components/dashboard/RecentHistory.astro';
+import { app } from '../config/firebase-server';
+import { getAuth } from 'firebase-admin/auth';
+
+const auth = getAuth(app);
+
+/* Verificar la sesión actual */
+if (!Astro.cookies.has("session")) {
+  return Astro.redirect("/signin");
+}
+const sessionCookie = Astro?.cookies?.get("session")?.value;
+if(!sessionCookie) return null
+const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+const user = await auth.getUser(decodedCookie.uid);
+
+if (!user) {
+  return Astro.redirect("/signin");
+}
 
 ---
 
 <Layout title="Welcome to Astro.">
-	<LayoutPages>
-		<LayoutTracker>
-			<div class="grid grid-cols-2 gap-16 h-full">
-				<div class="w-full">
-					<LineChart client:load />
+	<isAuthenticated>
+		<LayoutPages>
+			<LayoutTracker>
+				<div class="grid grid-cols-2 gap-16 h-full">
+					<div class="w-full">
+						<LineChart client:load />
+					</div>
+					<div class="w-full flex justify-center">
+						<PieChart client:load />
+					</div>
+					<div>
+						<RecentHistory />
+					</div>
 				</div>
-				<div class="w-full flex justify-center">
-					<PieChart client:load />
-				</div>
-				<div>
-					<RecentHistory />
-				</div>
-			</div>
-		</LayoutTracker>
-	</LayoutPages>
+			</LayoutTracker>
+		</LayoutPages>
+	</isAuthenticated>
 </Layout>

@@ -1,7 +1,8 @@
 ---
-import ThemeSwitch from '../../components/sidebar/ThemeSwitch.astro';
-import LoginForm from '../../components/auth/LoginForm';
-import Layout from '../../layouts/Layout.astro';
+import ThemeSwitch from '../components/sidebar/ThemeSwitch.astro';
+import LoginForm from '../components/auth/LoginForm.astro';
+import Layout from '../layouts/Layout.astro';
+
 ---
 
 <Layout title="Login">
@@ -10,7 +11,7 @@ import Layout from '../../layouts/Layout.astro';
             <ThemeSwitch />
         </div>
         <div class="flex items-center justify-center max-w-lg min-h-[500px] m-auto">
-            <LoginForm client:load />
+            <LoginForm />
         </div>
     </div>
 </Layout>
