@@ -1,23 +1,12 @@
----
-import { app } from "../../config/firebase-server";
-import { getAuth } from "firebase-admin/auth";
 
-/* Verificar si el usuario está autenticado */
-const auth = getAuth(app);
-if (Astro.cookies.has("session")) {
-  //@ts-ignore
-  const sessionCookie = Astro.cookies.get("session").value;
-  const decodedCookie = await auth.verifySessionCookie(sessionCookie);
-  if (decodedCookie) {
-    return Astro.redirect("/dashboard");
-  }
-}
----
 
-<div class="p-4 border dark:border-zinc-700 rounded-xl  bg-white border-slate-300 dark:bg-zinc-800 shadow-md">
-    <h1 class="font-semibold">¡Bienvenido!</h1>
+<div class="p-4 border bg-white dark:border-zinc-700 rounded-xl  border-slate-300 dark:bg-zinc-800 shadow-md">
+    <h1 class="font-semibold text-center">¡Bienvenido!</h1>
         
-    <button id="send">Iniciar sesión con Google</button>
+    <button id="send" class=" bg-blue-600 py-2 px-4 rounded-xl hover:bg-blue-700 text-sm flex items-center justify-center gap-2 mt-7 text-white">
+      <img src="/images/google.png" alt="google" class=" h-6 w-6 object-contain" />
+      Iniciar sesión con Google
+    </button>
 </div>
 
 <script>
@@ -32,21 +21,18 @@ if (Astro.cookies.has("session")) {
 
   const form = document.querySelector("#send") as HTMLButtonElement;
   form.addEventListener("click", async (e) => {
-    console.log('click')
     e.preventDefault();
 
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const idToken = await user.getIdToken();
-      console.log(idToken)
       const response = await fetch("/api/auth/signin", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${idToken}`,
         },
       });
-      console.log(response)
 
       if (response.redirected) {
         window.location.assign(response.url);

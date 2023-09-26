@@ -25,3 +25,16 @@ const { title } = Astro.props;
 		</main>
 	</body>
 </html>
+
+<script>
+	const setDarkMode = () => {
+	  if (localStorage.theme === 'dark') {
+	    document.documentElement.classList.add('dark');
+	  }
+	};
+  
+	// Se ejecuta en la navegación inicial
+	setDarkMode();
+	// Se ejecuta en la navegación de view transitions
+	document.addEventListener('astro:after-swap', setDarkMode);
+  </script>

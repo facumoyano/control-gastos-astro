@@ -2,7 +2,16 @@
 import Navigation from "./Navigation.astro";
 import ThemeSwitch from "./ThemeSwitch.astro";
 import Button from '../ui/Button.astro';
+import { app } from '../../config/firebase-server';
+import { getAuth } from 'firebase-admin/auth';
+import { Image } from "astro:assets";
 
+const sessionCookie = Astro?.cookies?.get("session")?.value;
+const auth = getAuth(app);
+let user = null;
+if(sessionCookie) {
+    user = await auth.verifySessionCookie(sessionCookie);
+}
 
 ---
 
@@ -10,9 +19,10 @@ import Button from '../ui/Button.astro';
     <div class="flex justify-end">
         <ThemeSwitch />
     </div>
+    
     <div class="flex flex-col gap-3 items-center mt-4">
-        <img src="/images/hombre.png" alt="avatar" class=" h-14 w-14 object-contain" />
-        <span class="font-medium">¡Hola, Facu!</span>
+        <Image src={user?.picture} alt="avatar" class=" h-14 w-14 object-contain" height="20" width="20" />
+        <span class="font-medium text-center">¡Hola, {user?.name}!</span>
         <Navigation />
     </div>
     <div class="flex justify-center">
