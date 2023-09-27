@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 const apiKey = import.meta.env.PUBLIC_API_KEY;
 const authDomain = import.meta.env.PUBLIC_AUTH_DOMAIN;
@@ -17,3 +18,4 @@ const firebaseConfig = {
 }
 
 export const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);

@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+import { db } from '../../config/firebase-client';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -7,10 +9,11 @@ import {
     Title,
     Tooltip,
     Legend,
-  } from 'chart.js';
-  import { Line } from 'react-chartjs-2';
-  
-  ChartJS.register(
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import { collection, getDocs } from 'firebase/firestore';
+
+ChartJS.register(
     CategoryScale,
     LinearScale,
     PointElement,
@@ -18,45 +21,96 @@ import {
     Title,
     Tooltip,
     Legend
-  );
-  
-  export const options = {
+);
+
+export const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Chart.js Line Chart',
-      },
+        legend: {
+            position: 'top' as const,
+        },
+        title: {
+            display: true,
+            text: 'Resumen',
+        },
     },
-  };
+};
+
+const LineChart = () => {
+  const [expenses, setExpenses] = useState<{ [date: string]: number }>({});
+  const [incomes, setIncomes] = useState<{ [date: string]: number }>({});
+  const [labels, setLabels] = useState<string[]>([]);
+  const [timePeriod, setTimePeriod] = useState<'week' | 'month'>('week');
+
+  useEffect(() => {
+    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const monthsOfYear = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const initialExpenses = timePeriod === 'week' ? 
+      daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: 0 }), {}) : 
+      monthsOfYear.reduce((acc, month) => ({ ...acc, [month]: 0 }), {});
+
+    setExpenses(initialExpenses);
+    setIncomes(initialExpenses);
+    setLabels(Object.keys(initialExpenses));
+
+    const getExpenses = async () => {
+      const expensesCol = collection(db, 'expenses');
+      const expensesSnapshot = await getDocs(expensesCol);
+      const expensesData = expensesSnapshot.docs.reduce((acc, doc) => {
+          const date = new Date(doc.data().date);
+          const label = timePeriod === 'week' ? daysOfWeek[date.getDay()] : monthsOfYear[date.getMonth()];
+          acc[label] += doc.data().amount;
+          return acc;
+      }, { ...initialExpenses });
+      setExpenses(expensesData);
+    };
+
+    const getIncomes = async () => {
+      const incomesCol = collection(db, 'incomes');
+      const incomesSnapshot = await getDocs(incomesCol);
+      const incomesData = incomesSnapshot.docs.reduce((acc, doc) => {
+          const date = new Date(doc.data().date);
+          const label = timePeriod === 'week' ? daysOfWeek[date.getDay()] : monthsOfYear[date.getMonth()];
+          acc[label] += doc.data().amount;
+          return acc;
+      }, { ...initialExpenses });
+      setIncomes(incomesData);
+    };
   
-  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  
-  export const data = {
-    labels,
+    getExpenses();
+    getIncomes();
+}, [timePeriod]);
+
+const data = {
+    labels, 
     datasets: [
-      {
-        label: 'Dataset 1',
-        data: labels.map(() => Math.floor(Math.random() * 2000) - 1000),
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-      {
-        label: 'Dataset 2',
-        data: labels.map(() => Math.floor(Math.random() * 2000) - 1000),
-        borderColor: 'rgb(53, 162, 235)',
-        backgroundColor: 'rgba(53, 162, 235, 0.5)',
-      },
+        {
+            label: 'Gastos',
+            data: labels.map(label => expenses[label] || 0), 
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        },
+        {
+            label: 'Ingresos',
+            data: labels.map(label => incomes[label] || 0), 
+            borderColor: 'rgb(53, 162, 235)',
+            backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        },
     ],
-  };
-  
-  const LineChart = () => (
+};
+
+return (
     <div>
-      <Line data={data} options={options} />
+      <div>
+        <span className='mr-2 text-sm'>Filtrar por:</span>
+        <select value={timePeriod} onChange={(e) => setTimePeriod(e.target.value as 'week' | 'month')} className='text-sm bg-white dark:bg-zinc-800 border dark:border-border-zinc-800 border-slate-400 rounded-lg py-1 px-2'>
+          <option value="week">Semana</option>
+          <option value="month">Meses</option>
+        </select>
+      </div>
+        <Line data={data} options={options} />
     </div>
-  );
-  
-  export default LineChart;
+);
+};
+
+export default LineChart;

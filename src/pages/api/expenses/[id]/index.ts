@@ -53,5 +53,5 @@ export const DELETE: APIRoute = async ({ params, redirect }) => {
       status: 500,
     });
   }
-  return redirect("/");
+  return redirect("/expenses");
 };
