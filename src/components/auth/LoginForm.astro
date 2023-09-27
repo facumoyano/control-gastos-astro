@@ -3,7 +3,7 @@
 <div class="p-4 border bg-white dark:border-zinc-700 rounded-xl  border-slate-300 dark:bg-zinc-800 shadow-md">
     <h1 class="font-semibold text-center">¡Bienvenido!</h1>
         
-    <button id="send" class=" bg-blue-600 py-2 px-4 rounded-xl hover:bg-blue-700 text-sm flex items-center justify-center gap-2 mt-7 text-white">
+    <button id="send" class=" dark:bg-white py-2 px-4 rounded-xl hover:bg-blue-700 text-sm flex items-center justify-center gap-2 mt-7 dark:text-black bg-black text-white">
       <img src="/images/google.png" alt="google" class=" h-6 w-6 object-contain" />
       Iniciar sesión con Google
     </button>
@@ -15,7 +15,7 @@
 
   const auth = getAuth(appClient);
   // Esto evitará que el navegador almacene los datos de sesión
-  auth.setPersistence(inMemoryPersistence);
+  // auth.setPersistence(inMemoryPersistence);
 
   const provider = new GoogleAuthProvider();
 

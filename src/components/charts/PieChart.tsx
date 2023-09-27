@@ -3,7 +3,9 @@ import { db } from '../../config/firebase-client';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend} from 'chart.js';
 import type { ChartOptions } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app } from '../../config/firebase-client';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,12 +20,27 @@ const options: ChartOptions = {
 const PieChart = () => {
   const [data, setData] = useState<{ [category: string]: number }>({});
   const [labels, setLabels] = useState<string[]>([]);
+  const [userId, setUserId] = useState<string | null>(null)
   const [type, setType] = useState<'expenses' | 'incomes'>('expenses');
 
   useEffect(() => {
+    const auth = getAuth(app);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+      } else {
+        console.log('no user')
+      }
+    });
+  }, []);
+
+  useEffect(() => {
       const getData = async () => {
+        if (!userId) return; 
+
           const dataCol = collection(db, type);
-          const dataSnapshot = await getDocs(dataCol);
+          const q = query(dataCol, where("userId", "==", userId)); // Filtrar los documentos por el ID del usuario
+          const dataSnapshot = await getDocs(q);
           const data = dataSnapshot.docs.reduce((acc, doc) => {
               const category = doc.data().category;
               if (!acc[category]) {
@@ -37,7 +54,7 @@ const PieChart = () => {
       };
 
       getData();
-  }, [type]);
+  }, [userId, type]);
 
   const chartData = {
       labels,

@@ -9,6 +9,7 @@ import { app } from '../config/firebase-server';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from "firebase-admin/firestore";
 import TotalAmount from '../components/dashboard/TotalAmount.astro';
+import Subscription from '../components/dashboard/Subscription.astro';
 
 
 interface Transaction {
@@ -37,12 +38,14 @@ if (!user) {
   return Astro.redirect("/signin");
 }
 
+const userId = user?.uid;
+
 const db = getFirestore(app);
 const incomesRef = db.collection("incomes");
 const expensesRef = db.collection("expenses");
 
-const incomesSnapshot = await incomesRef.get();
-const expensesSnapshot = await expensesRef.get();
+const incomesSnapshot = await incomesRef.where('userId', '==', userId).get();
+const expensesSnapshot = await expensesRef.where('userId', '==', userId).get();
 
 const incomes = incomesSnapshot.docs.map((doc) => ({
   id: doc.id,
@@ -64,6 +67,8 @@ const totalIncomes = incomes.reduce((total, income) => total + income.amount, 0)
 const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
 const totalBalance = totalIncomes - totalExpenses;  
 
+const subscriptionExpenses = expenses.filter(expense => expense.category === 'subscriptions');
+
 ---
 
 <Layout title="Welcome to Astro.">
@@ -80,13 +85,99 @@ const totalBalance = totalIncomes - totalExpenses;
 					<div class="col-span-4">
 						<RecentHistory transactions={transactions} />
 					</div>
-					<div class="flex gap-3 h-min col-span-8">
-						<TotalAmount text="Total ingresos" amount={totalIncomes} />
-						<TotalAmount text="Total egresos" amount={totalExpenses} />
-						<TotalAmount text="Total Balance" amount={totalBalance} customClass={totalBalance >= 0 ? 'text-green-500' : 'text-red-500'} />
+					<div class="col-span-8">
+						<h3 class="font-medium text-lg">Suscripciones</h3>
+						<div class="mt-6 container-subscriptions py-4 rounded-lg flex gap-10 w-full bg-slate-300 dark:bg-black shadow-lg" id="carrusel">
+							{subscriptionExpenses.map( sub => (
+								<Subscription subscription={sub} />
+							))}
+						</div>
+
+						<div class="h-min col-span-8 mt-6 rounded-xl">
+							<div class="grid grid-cols-12 w-full gap-6">
+								<div class="col-span-12">
+									<TotalAmount text="Total Balance" amount={totalBalance} customClass={totalBalance >= 0 ? 'text-green-500' : 'text-red-500'} />
+								</div>
+								<div class="col-span-6">
+									<TotalAmount text="Total ingresos" amount={totalIncomes} />
+								</div>
+								<div class="col-span-6">
+									<TotalAmount text="Total egresos" amount={totalExpenses} />
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</LayoutTracker>
 		</LayoutPages>
 	</isAuthenticated>
 </Layout>
+
+<style is:global>
+	.container-subscriptions {
+		mask-image: linear-gradient(
+			to left,
+			rgba(0, 0, 0, 0.2),
+			white
+		);
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none; /* Para Firefox */
+  		-ms-overflow-style: none;  /* Para Internet Explorer y Edge */
+		cursor: grab;
+	}
+
+	.container-subscriptions:active {
+		cursor: grabbing;
+	}
+
+	.container-subscriptions.active {
+		transition: none;
+	}
+
+	.container-subscriptions::-webkit-scrollbar {
+		display: none; /* Para Chrome, Safari y Opera */
+	}
+
+	.container-subscriptions > div {
+		flex: 0 0 auto;
+		width: 250px;
+		scroll-snap-align: left;
+	}
+</style>
+
+<script>
+	window.onload = function() {
+	  const slider: HTMLElement | null = document.getElementById('carrusel');
+	  if (!slider) return; // Asegúrate de que el slider está definido
+	  
+	  let isDown = false;
+	  let startX: number;
+	  let scrollLeft: number;
+	
+	  slider.addEventListener('mousedown', (e: MouseEvent) => {
+		isDown = true;
+		slider.classList.add('active');
+		startX = e.pageX - slider.offsetLeft;
+		scrollLeft = slider.scrollLeft;
+	  });
+	
+	  slider.addEventListener('mouseleave', () => {
+		isDown = false;
+		slider.classList.remove('active');
+	  });
+	
+	  slider.addEventListener('mouseup', () => {
+		isDown = false;
+		slider.classList.remove('active');
+	  });
+	
+	  slider.addEventListener('mousemove', (e: MouseEvent) => {
+		if(!isDown) return;
+		e.preventDefault();
+		const x = e.pageX - slider.offsetLeft;
+		const walk = (x - startX) * 1.5; //scroll-slower
+		slider.scrollLeft = scrollLeft - walk;
+	  });
+	}
+</script>

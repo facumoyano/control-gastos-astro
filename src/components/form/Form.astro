@@ -28,8 +28,9 @@ const pathname = Astro.url.pathname;
       required=true
     />
     <select name="category" id="category" class="bg-white dark:bg-zinc-800 border dark:border-border-zinc-800 border-slate-400 rounded-lg py-2 px-4">
-        <option value="youtube" class="text-black">Youtube</option>
-        <option value="others" class="text-black">Otros</option>
+        <option value="youtube" class="text-black dark:text-white">Youtube</option>
+        <option value="others" class="text-black dark:text-white">Otros</option>
+        <option value="subscriptions" class="text-black dark:text-white">Suscripciones</option>
     </select>
     <Button type="submit">
         Agregar

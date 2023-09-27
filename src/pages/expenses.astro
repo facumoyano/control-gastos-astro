@@ -6,6 +6,7 @@ import Form from '../components/form/Form.astro';
 import IncomesExpensesInfo from '../components/IncomesExpensesInfo.astro';
 import { app } from "../config/firebase-server";
 import { getFirestore } from "firebase-admin/firestore";
+import { getAuth } from 'firebase-admin/auth';
 
 interface Income {
     id: string;
@@ -15,9 +16,26 @@ interface Income {
     category: string;
 }
 
+const auth = getAuth(app);
+
+/* Verificar la sesión actual */
+if (!Astro.cookies.has("session")) {
+  return Astro.redirect("/signin");
+}
+const sessionCookie = Astro?.cookies?.get("session")?.value;
+if(!sessionCookie) return null
+const decodedCookie = await auth.verifySessionCookie(sessionCookie);
+const user = await auth.getUser(decodedCookie.uid);
+
+if (!user) {
+  return Astro.redirect("/signin");
+}
+
+const userId = user?.uid;
+
 const db = getFirestore(app);
 const expensesRef = db.collection("expenses");
-const expensesSnapshot = await expensesRef.orderBy("createdAt", "desc").get();
+const expensesSnapshot = await expensesRef.where('userId', '==', userId).orderBy("createdAt", "desc").get();
 const expenses = expensesSnapshot.docs.map((doc) => ({
   id: doc.id,
   ...doc.data(),

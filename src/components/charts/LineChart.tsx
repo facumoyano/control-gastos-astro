@@ -11,7 +11,9 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { app } from '../../config/firebase-client';
 
 ChartJS.register(
     CategoryScale,
@@ -40,7 +42,19 @@ const LineChart = () => {
   const [expenses, setExpenses] = useState<{ [date: string]: number }>({});
   const [incomes, setIncomes] = useState<{ [date: string]: number }>({});
   const [labels, setLabels] = useState<string[]>([]);
+  const [userId, setUserId] = useState<string | null>(null)
   const [timePeriod, setTimePeriod] = useState<'week' | 'month'>('week');
+
+  useEffect(() => {
+    const auth = getAuth(app);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+      } else {
+        console.log('no user')
+      }
+    });
+  }, [])
 
   useEffect(() => {
     const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
@@ -55,7 +69,8 @@ const LineChart = () => {
 
     const getExpenses = async () => {
       const expensesCol = collection(db, 'expenses');
-      const expensesSnapshot = await getDocs(expensesCol);
+      const q = query(expensesCol, where('userId', '==', userId));
+      const expensesSnapshot = await getDocs(q);
       const expensesData = expensesSnapshot.docs.reduce((acc, doc) => {
           const date = new Date(doc.data().date);
           const label = timePeriod === 'week' ? daysOfWeek[date.getDay()] : monthsOfYear[date.getMonth()];
@@ -64,10 +79,11 @@ const LineChart = () => {
       }, { ...initialExpenses });
       setExpenses(expensesData);
     };
-
+    
     const getIncomes = async () => {
       const incomesCol = collection(db, 'incomes');
-      const incomesSnapshot = await getDocs(incomesCol);
+      const q = query(incomesCol, where('userId', '==', userId));
+      const incomesSnapshot = await getDocs(q);
       const incomesData = incomesSnapshot.docs.reduce((acc, doc) => {
           const date = new Date(doc.data().date);
           const label = timePeriod === 'week' ? daysOfWeek[date.getDay()] : monthsOfYear[date.getMonth()];
@@ -79,7 +95,7 @@ const LineChart = () => {
   
     getExpenses();
     getIncomes();
-}, [timePeriod]);
+}, [userId, timePeriod]);
 
 const data = {
     labels, 

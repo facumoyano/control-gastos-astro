@@ -10,8 +10,8 @@ const { text, amount, customClass} = Astro.props as TotalAmountProps;
 ---
 
 <div
-  class="bg-slate-200 dark:bg-zinc-700 p-6 rounded-xl mt-6 border-slate-200 dark:border-zinc-700 border flex flex-col gap-2 font-medium w-full items-center justify-center shadow-lg"
+  class="bg-slate-300 dark:bg-zinc-700 p-6 rounded-xl border-slate-200 dark:border-zinc-700 border flex flex-col gap-2 font-medium w-full items-center justify-center shadow-lg"
 >
-  <span>{text}</span>{" "}
-  <span class=`${customClass} text-2xl`>${formatNumber(amount)}</span>
+  <span class="text-lg">{text}</span>{" "}
+  <span class=`${customClass} text-2xl font-bold`>${formatNumber(amount)}</span>
 </div>
