@@ -8,6 +8,7 @@ import RecentHistory from '../components/dashboard/RecentHistory.astro';
 import { app } from '../config/firebase-server';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from "firebase-admin/firestore";
+import TotalAmount from '../components/dashboard/TotalAmount.astro';
 
 
 interface Transaction {
@@ -59,6 +60,10 @@ const transactions = [...incomes, ...expenses]
   .sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
   .slice(0, 5);
 
+const totalIncomes = incomes.reduce((total, income) => total + income.amount, 0);
+const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
+const totalBalance = totalIncomes - totalExpenses;  
+
 ---
 
 <Layout title="Welcome to Astro.">
@@ -74,6 +79,11 @@ const transactions = [...incomes, ...expenses]
 					</div>
 					<div>
 						<RecentHistory transactions={transactions} />
+					</div>
+					<div class="flex gap-3 h-min">
+						<TotalAmount text="Total ingresos" amount={totalIncomes} />
+						<TotalAmount text="Total egresos" amount={totalExpenses} />
+						<TotalAmount text="Total Balance" amount={totalBalance} customClass={totalBalance >= 0 ? 'text-green-500' : 'text-red-500'} />
 					</div>
 				</div>
 			</LayoutTracker>
