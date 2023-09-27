@@ -73,8 +73,12 @@ const LineChart = () => {
       const expensesSnapshot = await getDocs(q);
       const expensesData = expensesSnapshot.docs.reduce((acc, doc) => {
           const date = new Date(doc.data().date);
-          const label = timePeriod === 'week' ? daysOfWeek[date.getDay()] : monthsOfYear[date.getMonth()];
-          acc[label] += doc.data().amount;
+          const now = new Date();
+          // Verificar si la fecha está en la misma semana que la fecha actual
+          if (timePeriod === 'week' && getWeek(date) === getWeek(now)) {
+              const label = daysOfWeek[date.getDay()];
+              acc[label] += doc.data().amount;
+          }
           return acc;
       }, { ...initialExpenses });
       setExpenses(expensesData);
@@ -86,12 +90,23 @@ const LineChart = () => {
       const incomesSnapshot = await getDocs(q);
       const incomesData = incomesSnapshot.docs.reduce((acc, doc) => {
           const date = new Date(doc.data().date);
-          const label = timePeriod === 'week' ? daysOfWeek[date.getDay()] : monthsOfYear[date.getMonth()];
-          acc[label] += doc.data().amount;
+          const now = new Date();
+          // Verificar si la fecha está en la misma semana que la fecha actual
+          if (timePeriod === 'week' && getWeek(date) === getWeek(now)) {
+              const label = daysOfWeek[date.getDay()];
+              acc[label] += doc.data().amount;
+          }
           return acc;
       }, { ...initialExpenses });
       setIncomes(incomesData);
     };
+    
+    // Función para obtener el número de la semana del año
+    function getWeek(date: Date) {
+      const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+      const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+      return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+    }
   
     getExpenses();
     getIncomes();

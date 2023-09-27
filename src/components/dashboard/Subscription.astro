@@ -3,15 +3,26 @@ import { Image } from "astro:assets";
 import { formatDate, formatNumber } from "../../utils/functions";
 
 const { subscription } = Astro.props;
+
+// Mapear los títulos de las suscripciones a las rutas de las imágenes
+const subscriptionImages = {
+  'youtube': '/images/subscriptions/youtube.png',
+  'spotify': '/images/subscriptions/spotify.png',
+  'netflix': '/images/subscriptions/netflix.png',
+  // Agrega más suscripciones aquí
+};
+
+// Obtener la ruta de la imagen para la suscripción actual, o usar una imagen predeterminada si no se encuentra ninguna coincidencia
+const subscriptionImage = subscriptionImages[subscription.title.toLowerCase() as keyof typeof subscriptionImages] || '/images/subscriptions/default.png';
 ---
 
 <div class="min-w-[210px] flex dark:bg-zinc-800 p-3 rounded-md mx-4 bg-slate-400 shadow-md">
     <div class=" h-12 w-16 grid place-content-center rounded-full bg-black mr-2">
-        <Image src="/images/subscriptions/youtube.png" alt="sub" width={40} height={40} class="object-contain w-6 h-6" />
+        <Image src={subscriptionImage} alt="sub" width={40} height={40} class="object-contain w-6 h-6" />
     </div>
     <div class="w-full">
         <div class="flex justify-between">
-            <p class="text-medium">{subscription.title}</p>
+            <p class="text-medium capitalize">{subscription.title}</p>
             <span class="font-medium">${formatNumber(subscription.amount)}</span>
         </div>
         <span class="text-[12px] text-gray-600 dark:text-gray-400">{formatDate(subscription.date)}</span>
