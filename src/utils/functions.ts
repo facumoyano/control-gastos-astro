@@ -8,3 +8,7 @@ export function formatDate(dateString: string) {
     const formattedDate = `${day}/${month}/${year} - ${hours}:${minutes < 10 ? '0' : ''}${minutes}pm`;
     return formattedDate;
 }
+
+export function formatNumber(number: number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}

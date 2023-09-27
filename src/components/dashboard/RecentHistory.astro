@@ -1,5 +1,5 @@
 ---
-import { formatDate } from "../../utils/functions";
+import { formatDate, formatNumber } from "../../utils/functions";
 
 interface Transaction {
     id: string;
@@ -34,7 +34,7 @@ const { transactions } = Astro.props
             <p class="text-[12px] text-gray-600 dark:text-gray-400">{formatDate(item.date)}</p>
           </div>
         </div>
-        <span class="font-medium">{item.type === "income" ? '+' : '-'}{" "}${item.amount}</span>
+        <span class="font-medium">{item.type === "income" ? '+' : '-'}{" "}${formatNumber(item.amount)}</span>
       </li>
     ))}
   </ul>

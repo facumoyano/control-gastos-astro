@@ -1,4 +1,5 @@
 ---
+import { formatNumber } from "../../utils/functions";
 interface TotalAmountProps {
   text: string;
   amount: number;
@@ -9,8 +10,8 @@ const { text, amount, customClass} = Astro.props as TotalAmountProps;
 ---
 
 <div
-  class="bg-slate-200 dark:bg-zinc-700 p-6 rounded-xl mt-6 shadow-md border-slate-200 dark:border-zinc-700 border flex flex-col gap-2 font-medium"
+  class="bg-slate-200 dark:bg-zinc-700 p-6 rounded-xl mt-6 border-slate-200 dark:border-zinc-700 border flex flex-col gap-2 font-medium w-full items-center justify-center shadow-lg"
 >
   <span>{text}</span>{" "}
-  <span class=`${customClass} text-2xl`>$ {amount}</span>
+  <span class=`${customClass} text-2xl`>${formatNumber(amount)}</span>
 </div>

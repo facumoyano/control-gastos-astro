@@ -8,7 +8,7 @@ const pathname = Astro.url.pathname;
 <form class="flex flex-col gap-4" action=`/api/${pathname}` method="POST">
     <Input
       id="title"
-      placeholder=`Nombre del ${pathname === 'incomes' ? 'Ingreso' : 'gasto'}`
+      placeholder={pathname === '/incomes' ? 'Nombre del ingreso' : 'Nombre del gasto'}
       name="title"
       type="text"
       required=true

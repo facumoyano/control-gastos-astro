@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import { formatDate } from '../utils/functions'
+import { formatDate, formatNumber } from '../utils/functions'
 
 interface IProps {
     item: {
@@ -18,20 +18,22 @@ const { item } = Astro.props as IProps
 
 ---
 
-<div class="bg-white dark:bg-zinc-800 border dark:border-border-zinc-800 border-slate-400 rounded-lg p-4 flex gap-6 shadow-lg"  data-id={item.id} id="item-id">
+<div class="bg-white dark:bg-zinc-800 border dark:border-border-zinc-800 border-slate-400 rounded-lg p-4 flex gap-6 shadow-lg relative"  data-id={item.id} id="item-id">
     <Image src="/images/hombre.png" alt="icon" width={30} height={30} class="object-contain" />
     <div class="flex flex-col gap-2">
         <div>
             <p>{item.title}</p>
         </div>
         <div class="flex gap-6">
-            <p>${item.amount}</p>
+            <p>${formatNumber(item.amount)}</p>
             <p>{formatDate(item.date)}</p>
             <p>{item.category}</p>
         </div>
     </div>
-    <astro-greet data-pathname={pathname} id="astro-greet">
-        <button type="button" id="delete-document" class="bg-red-600">Eliminar</button>
+    <astro-greet data-pathname={pathname} id="astro-greet" >
+      <button type="button" id="delete-document" class="bg-black p-2 rounded-full absolute right-4 top-[50%] transform -translate-y-1/2">
+        <Image src="/icons/delete.svg" alt="delete" width={30} height={30} class='object-contain w-6 h-6' />
+      </button>
     </astro-greet>
 </div>
 

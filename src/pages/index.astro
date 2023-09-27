@@ -70,17 +70,17 @@ const totalBalance = totalIncomes - totalExpenses;
 	<isAuthenticated>
 		<LayoutPages>
 			<LayoutTracker>
-				<div class="grid grid-cols-2 gap-16 h-full">
-					<div class="w-full">
+				<div class="grid grid-cols-12 gap-16 h-full">
+					<div class="w-full col-span-6">
 						<LineChart client:load />
 					</div>
-					<div class="w-full flex justify-center">
+					<div class="w-full flex justify-center col-span-6">
 						<PieChart client:load />
 					</div>
-					<div>
+					<div class="col-span-4">
 						<RecentHistory transactions={transactions} />
 					</div>
-					<div class="flex gap-3 h-min">
+					<div class="flex gap-3 h-min col-span-8">
 						<TotalAmount text="Total ingresos" amount={totalIncomes} />
 						<TotalAmount text="Total egresos" amount={totalExpenses} />
 						<TotalAmount text="Total Balance" amount={totalBalance} customClass={totalBalance >= 0 ? 'text-green-500' : 'text-red-500'} />
